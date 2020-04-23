@@ -1,22 +1,43 @@
 #!/bin/bash
+#=========HEADER===========================================================|
+#AUTOR
+# Renato Alcantara <renato.forjob@gmail.com>
+#PROGRAMA
+#WelcomeInit é uma ferramenta para auxiliar na recuperação
+#do sistema. Após me ver com o sistema travado ao reniciar no modo texto
+#fui obrigado a reinstalar o sistema só que sem ter um pendrive
+#bootavel e sem acesso ao modo gráfico para tal, resolvi criar
+#essa ferramenta.
+#==========================================================================|
 
+
+#=====CORES TERMINAL=====================|
 # cores das letras no terminal
 vermelho="\033[31;1m"
 verde="\033[32;1m"
 branco="\033[37;1m"
+#========================================|
 
-welcom="""
-===========================
-#     WelcomeInit 1.0     #
-===========================\n
-"""
+#========BOAS VINDAS=======================================================|
 clear
-printf "${welcom}"
+cat <<FECHA
 
+ __      __       .__                              .___       .__  __   
+/  \    /  \ ____ |  |   ____  ____   _____   ____ |   | ____ |__|/  |_ 
+\   \/\/   // __ \|  | _/ ___\/  _ \ /     \_/ __ \|   |/    \|  \   __\
+ \        /\  ___/|  |_\  \__(  <_> )  Y Y  \  ___/|   |   |  \  ||  |  
+  \__/\  /  \___  >____/\___  >____/|__|_|  /\___  >___|___|  /__||__|  
+       \/       \/          \/            \/     \/         \/          
+
+FECHA
+
+#==========================================================================|
+
+#========ESCOLHA DO USUARIO====================================|
 escolha(){
 	case $1 in
-		1) aptitudeDownload;;
-		2) echo "VLC" ;;
+		1) aptitudeDownload;; #baixar o gerenciador aptitude
+		2) echo "VLC" ;; 	  #baixa o vlc
 		3) clear ; formatarHD -f ;;
 		4) clear ; pendriveBootavel ;;
 		5) clear ; baixarDistro ;;
@@ -24,9 +45,25 @@ escolha(){
 		*) "Opção desconhecida"  ; echo ; clear; menu ;;
 	esac
 }
+
+#==============================================================|
+
 baixarDistro(){
- wget http://old-releases.ubuntu.com/releases/bionic/ubuntu-18.04-desktop-amd64.iso --show-progress
- clear
+	printf """
+===========================
+| 1) Instalar iso Minimal |
+===========================
+| 2 ) Ubuntu 18.04        |
+===========================
+"""
+ read -p "Escolha: " distro
+ if [[ "$distro" = 1 ]]; then
+ 	wget http://archive.ubuntu.com/ubuntu/dists/bionic-updates/main/installer-amd64/current/images/netboot/mini.iso --show-progress
+ else
+ 	wget http://old-releases.ubuntu.com/releases/bionic/ubuntu-18.04-desktop-amd64.iso --show-progress
+ 	clear
+ fi
+
 }
 pendriveBootavel(){
 	
@@ -107,7 +144,7 @@ formatarHD(){
 		read -p "Escolha:" response
 		if [[ $response -le $numMax ]]; then
 			if [[ "$1" = "-f" ]]; then
-				read -p "Entre com o nome que deseja para o dispositivo: " name
+				read -p "Entre com o nome que deseja para o dispositivo> " name
 				formatar "${remove[(( $remove - 1))]}" $name
 			fi
 			bootavel="${remove[(( $remove - 1))]}"
@@ -123,7 +160,7 @@ formatarHD(){
 
 
 aptitudeDownload(){
-	if which aptitude > /dev/null 2>&1 ; 
+	if type -P aptitude > /dev/null 2>&1; # comando type -P verifica se o aptitude está instalado.  
 		then
 			jaInstalado
 	fi
@@ -142,7 +179,7 @@ jaInstalado(){
 
 menu(){
 
-	clear
+
 	printf "Escolha seu pacote para ser feito a instalação.\n"
 	printf """
 ====================
@@ -158,9 +195,9 @@ menu(){
 |==================|
 | 6 ) Sair         |
 ====================
-\n"""
- read -p ":" response
- escolha $response
+\n""" | pv -qL 70
+ read -p "Escolha>" response # recebendo a ecolha do usuario
+ escolha $response 	  # enviando a reposta para a função escolha
 
  }
 
