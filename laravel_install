@@ -1,0 +1,88 @@
+#!/bin/bash
+#===== CORES TERMINAL ====#
+VERMELHO="\033[31;1m"
+VERDE="\033[32;1m"
+BRANCO="\033[37;1m"
+PISCANTE="\033[04;1m"
+#=========================#
+
+if [[ $UID -ne 0 ]]; then
+    clear
+    echo -e "${VERMELHO} [i] Execute $0 como root \n"
+    exit 1
+fi
+
+which apache2 >> /tmp/laravel.log
+if [[ "$?" = "1" ]]; then
+    clear
+    echo -e "[-] Instalando apache2 \n"
+    if sudo apt install -y apache2 ; then
+        echo -e "${VERDE}[*] Apache instalado com sucesso! \n"
+    else
+        echo -e "${VERMELHO}Erro ao instalar apache \n"
+    fi
+fi
+
+which mysql-server >> /tmp/laravel.log
+if [[ "$?" == "1" ]]; then
+    clear
+    echo -e "[-] Instalando banco de dados MYSQL \n"
+    if sudo apt install -y mysql-server; then
+      echo -e "${VERDE}[*] Mysql instalado com sucess! \n"
+    else
+      clear
+      echo -e "${VERMELHO}Erro ao instalar Mysql"
+    fi
+fi
+
+which php >> /tmp/laravel.log
+if [[ "$?" == "1" ]]; then
+    clear
+    echo -e "Istalando php"
+    if sudo apt install -y php libapache2-mod-php php-mysql; then
+       echo -e "${VERDE}[*] PHP Instalado com sucesso!"
+    else
+       clear
+       echo -e "${VERMELHO} Erro ao instalar PHP"
+    fi
+fi
+
+which composer >> /tmp/laravel.log
+if [[ "$?" == "1" ]]; then
+   clear
+   echo -e "[-] Instalando Composer"
+   if sudo apt install -y composer; then
+     echo -e "[*] ${VERDE} Composer instalado com sucesso!"
+    else
+     clear
+     echo -e "Erro ao instalar Composer"
+   fi
+
+fi
+
+
+which composer 
+if [[ "$?" == "0" ]]; then
+    echo -e "[-] Instalando Laravel... \n"
+    sudo apt install -y php-zip
+    clear
+    echo -e "[-] Instalando Laravel... \n"
+    sudo apt install -y php-mbstring
+    clear
+    echo -e "[-] Instalando Laravel... \n"
+    sudo apt install php-dom
+    clear
+    echo -e "[-] Instalando Laravel... \n" 
+    if composer global require laravel/installer; then
+       echo -e "[*] Laravel instalado com sucesso!"
+     else
+       echo -e "Erro ao instalar Laravel com Composer"
+    fi
+fi
+
+chmod -R 777 /var/www/
+if composer create-project --prefer-dist laravel/laravel /var/www/blog;then
+  echo -e "[*] Projeto criado com sucesso! \n [*] Nome do projeto blog"
+else
+    echo -e "Erro ao criar um novo projeot em Laravel"
+fi
